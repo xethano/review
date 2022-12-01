@@ -2,6 +2,22 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include <string.h>
+
+struct BattleGrid
+{
+	bool Guessed;
+	bool Hit;
+	char Comment[256];
+	int BoatIndex;
+};
+
+struct BattleGrid2
+{
+	bool Guessed;
+	bool Hit;
+	char Comment[256];
+};
 
 enum MyEnumType
 {
@@ -29,13 +45,138 @@ int Sqrtthingy2(double* i)
 	return sqrt(*i);
 }
 
-void SqrtThingy3(double in, double* pout)
+int AddNumbers(int array[], int lengthofarray)
 {
-	*pout = sqrt(in);
+	int tempval = 0;
+	for (int i = 0; i < lengthofarray; i++)
+	{
+		tempval += array[i];
+	}
+	return tempval;
 }
+
+int AddNumbersPtr(int * array, int lengthofarray)
+{
+	int tempval = 0;
+	for (int i = 0; i < lengthofarray; i++)
+	{
+		tempval += *array; // take the indirect (pointed to) value in the array
+		array++; // <- this is a special ++ operator and tells the int * to
+
+		// the below line is exactly equivalent. But don't increment array++
+		// tempval += array[i];
+	}
+	return tempval;
+}
+
+int StringLength(char array[])
+{
+	int index = 0;
+	while (array[index] != '\0')
+	{
+		index++;
+	}
+	return index;
+}
+
+void StringCopyFake( char destination[], const char source[])
+{
+	int index = 0;
+	
+	while (source[index] != '\0')
+	{
+		destination[index] = source[index];
+		index++;
+	}
+	destination[index] = '\0';
+}
+
+void AppendString(char destination[], const char addition[])
+{
+	int dest_leng = StringLength(destination);
+	StringCopyFake(destination+dest_leng, addition);
+}
+
+int StringCompare(const char array[], const char array2[])
+{
+	
+	int index = 0;
+	
+	while (true)
+	{
+		if (array[index] == '\0' && array2[index] != '\0')
+		{
+			return 1;
+		}
+		if (array[index] != '\0' && array2[index] == '\0')
+		{
+			return -1;
+		}
+		if (array[index] == array2[index] && array2[index] == '\0')
+		{
+			return 0;
+		}
+
+		char tempc = array[index];
+		char tempd = array2[index];
+		if (tempc > tempd)
+		{
+			return -1;
+		}
+		if (tempc < tempd)
+		{
+			return 1;
+		}
+		index++;
+	}
+}
+
+
+
+
+void PointerArith(int* pArray, int len)
+{
+	while (len > 0)
+	{
+		*pArray = 10;
+		pArray++;
+		pArray++;
+		len--;
+		len--;
+	}
+}
+
+
+
 
 int main()
 {
+
+	int TestArray[] = { 4, 6, 1, 2, 9, 22 };
+	PointerArith(TestArray, 6);
+	for (int iii = 0; iii < 6; iii++)
+	{
+		printf("%d ", TestArray[iii]);
+	}
+
+	struct BattleGrid grid[10] = { 0 };
+
+	// the below, grid[2] IS a grid struct, not a pointer to one. so you use '.'
+	grid[2].BoatIndex = 2;
+	grid[2].Guessed = true;
+
+	// this is a POINTER to a grid struct, so you use "->"
+	struct BattleGrid* pGridPtr = &grid[3];
+	pGridPtr->BoatIndex = 4;
+	pGridPtr->Hit = true;
+
+	// this wipes out BoatIndex = 4, and replaces ALL of the fields of grid[3] with
+	// those of grid[2]!!!
+	grid[3] = grid[2];
+
+	struct BattleGrid2 bg2[3];
+	// grid[3] = bg2[1]; nope
+
 	enum MyEnumType met;
 	met = BLUE;
 
@@ -52,9 +193,67 @@ int main()
 	}
 
 	int arrayof20[20] = { 0 };
-	int twodimar[10][10] = { 0 };
-
+	int twodimar[10][5] = { 0 };
 	
+	// assign values to each element in the array
+	for (int y = 0; y < 5; y++)
+	{
+		for (int x = 0; x < 10; x++)
+		{
+			twodimar[x][y] = y * 10 + x;
+		}
+	}
+
+	// print row (not column) 2 of the array
+	for (int x = 0; x < 10; x++)
+	{
+		printf("%d ", twodimar[x][1]);
+		
+	}
+	printf("\n");
+
+	for (int y = 0; y < 5; y++)
+	{
+		printf("%d ", twodimar[2][y]);
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	int array5[] = { 0,1,2,3,4 };
+	const char* arraychar[] = { "et", "bru" };
+
+	// stringroutines
+	const char* szString = "Test String"; // null terminator is secretly appended to the string
+	int szLen = strlen(szString); // does not include null terminator.
+	char szCopy[256]; // has to be bigger than or equal in size to what we're copying
+	strcpy(szCopy, szString);
+	strcat(szCopy, "blahblah");
+	int result = strcmp(szCopy, "Test Stringclahblah");
+	if (result == 1)
+	{
+		printf("they're equal\n");
+	}
+
+	int sum0 = AddNumbers(array5, 5);
+	int sum1 = AddNumbersPtr(array5, 5);
+	int testi = 20;
+	int sumTesti = AddNumbersPtr(&testi, 1); // will return 20
+
 
 	short input = 16; // indirect value (what the memory points TO)
 	short * pInput = &input; // direct value (the memory pointer in memory)
